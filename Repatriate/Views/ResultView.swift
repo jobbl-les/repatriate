@@ -12,7 +12,9 @@ struct ResultView: View {
     /// Monospaced, selectable raw output with a Done button.
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("\(sim.title) — \(sim.msisdn)")
+            // Only the card number is shown; the mapped MSISDN is deliberately
+            // never displayed to the user.
+            Text(sim.title)
                 .font(.headline)
             ScrollView {
                 Text(text)

@@ -1,0 +1,1043 @@
+openapi: 3.0.1
+info:
+  title: NMPR
+  description: "**This API version is currently in BETA and may received updates before it is officially released.**\n\nThe NMPR API is availble globally to law enforcement agencies with a valid license. It can be used to\nquery Recipero's Device Intel and Number Intel services for the prevention and detection of crime.\n"
+  version: v2
+servers:
+  - url: https://api.recipero.com/nmpr/v2
+paths:
+  /search:
+    post:
+      summary: Search
+      description: Search
+      operationId: search
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NMPR_Search_Request'
+            examples:
+              Device Intel Search:
+                summary: Device Intel Search using NMPR PAT
+                value:
+                  identifier: '100000010000023'
+                  agentId: Insert Personal Access Token
+                  reasonCode: intelligence
+              Device Intel + Number Intel Search:
+                summary: Device Intel + Number Intel Search using NMPR PAT
+                value:
+                  identifier: '447770000000'
+                  agentId: Insert Personal Access Token
+                  reasonCode: intelligence
+                  updateMobileNetworkStatus: true
+                  includeRelatedEvents: true
+              Number Intel Search:
+                summary: Number Intel Search (no associated records included) using NMPR PAT
+                value:
+                  identifier: '447770000000'
+                  agentId: Insert Personal Access Token
+                  reasonCode: intelligence
+                  updateMobileNetworkStatus: true
+                  includeRelatedEvents: false
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NMPR_Search_Response'
+              example:
+                summary:
+                  asset: true
+                  blocked: true
+                  crime: true
+                  found: true
+                  information: true
+                  insurance: true
+                  lost: true
+                  searchHistory:
+                    - recipero-checkmend
+                    - recipero-intelligence
+                    - recipero-nmpr
+                  validImei: true
+                  makeModel: RECIPERO TESTMODEL
+                events:
+                  - organisation:
+                      name: Recipero Local Ltd
+                    country: United States
+                    date: '2017-02-15T09:41:32.0000000+00:00'
+                    identifierMatched: '100000010000023'
+                    system: Recipero
+                    type: block
+                  - organisation:
+                      name: Recipero Local Ltd
+                    country: Japan
+                    date: '2017-02-15T09:59:31.0000000+00:00'
+                    identifierMatched: '100000010000023'
+                    system: Recipero
+                    type: block
+                  - organisation:
+                      name: Recipero Local Ltd
+                    country: United Kingdom
+                    date: '2019-01-01T12:00:00.0000000+00:00'
+                    identifierMatched: '100000010000023'
+                    system: Recipero
+                    type: unblock
+                  - organisation:
+                      name: Recipero Local/Recipero Local Borough
+                    country: UK
+                    date: '2019-04-20T12:00:00.0000000+00:00'
+                    deviceInfo:
+                      makeModel: ReciperoMake ReciperoModel
+                    identifierMatched: '100000010000023'
+                    reference: RCP-FND-12345
+                    relatedItems:
+                      - makeModel: ReciperoMake ReciperoModel
+                        identifiers:
+                          - '100000010000023'
+                    system: The NMPR
+                    type: found
+                  - organisation:
+                      name: Recipero Local Ltd
+                    country: United Kingdom
+                    date: '2020-01-01T12:00:00.0000000+00:00'
+                    identifierMatched: '100000010000023'
+                    system: Recipero
+                    type: block
+                  - organisation:
+                      name: Recipero Local Ltd
+                    country: United Kingdom
+                    date: '2020-02-11T02:36:14.0000000+00:00'
+                    identifierMatched: '100000010000023'
+                    system: Recipero AssetWatch
+                    type: asset
+                  - account:
+                      address: 'Recipero Local, Corinium House, Corinium Avenue'
+                      email: something@something.com
+                      name: Recipero Local
+                    country: UK
+                    date: '2020-09-01T12:00:00.0000000+00:00'
+                    deviceInfo:
+                      makeModel: ReciperoMake ReciperoModel
+                    identifierMatched: '100000010000023'
+                    location: 'Corinium Ave, Gloucester GL4, UK, Gloucestershire, GB'
+                    reference: LR20200901E70A-298C90B11078
+                    relatedItems:
+                      - makeModel: ReciperoMake ReciperoModel
+                        description: This is a test item
+                        identifiers:
+                          - '100000010000023'
+                    system: ReportMyLoss
+                    type: loss
+                  - organisation:
+                      name: Recipero Local Ltd
+                    country: United Kingdom
+                    date: '2020-09-01T12:00:00.0000000+00:00'
+                    deviceInfo:
+                      makeModel: Test Make Test Model
+                    identifierMatched: '100000010000023'
+                    reference: RCP-REF-20200901
+                    system: ClaimsCheck
+                    type: claim
+                  - organisation:
+                      contactEmail: something@something.com
+                      name: Recipero Local
+                    user:
+                      email: something@something.com
+                      name: NMPR Local
+                    country: UK
+                    date: '2020-09-18T10:00:00.0000000+00:00'
+                    deviceInfo:
+                      description: Test information report
+                    identifierMatched: '100000010000023'
+                    reference: 4a570ca86a900f7ed0a8894c23d3e412
+                    relatedItems:
+                      - identifiers:
+                          - '100000010000023'
+                    system: The NMPR
+                    type: inforeport
+                  - organisation:
+                      name: Recipero Local
+                    country: UK
+                    date: '2020-11-30T12:00:00.0000000+00:00'
+                    identifierMatched: '100000010000023'
+                    location: 'Recipero Ltd, Corinium Avenue, Gloucester, GL43HX'
+                    reference: RCP-FND-20201130
+                    relatedItems:
+                      - identifiers:
+                          - '100000010000023'
+                    system: Recipero
+                    type: found
+                  - account:
+                      address: 'United Kingdom, GL4 3HX'
+                      email: something@something.com
+                      name: Register Account
+                      phone:
+                        - type: general
+                          number: '01234567890'
+                        - type: general
+                          number: '02468135790'
+                        - type: general
+                          number: '09876543210'
+                    country: UK
+                    date: '2021-05-28T09:52:02.0000000+00:00'
+                    deviceInfo:
+                      makeModel: Recipero Test
+                    identifierMatched: '100000010000023'
+                    identifiers:
+                      - '100000010000023'
+                      - '788946926374'
+                    system: Immobilise
+                    type: crime
+                  - account:
+                      address: 'United Kingdom, GL4 3HX'
+                      email: something@something.com
+                      name: Register Account
+                      phone:
+                        - type: general
+                          number: '01234567890'
+                        - type: general
+                          number: '02468135790'
+                        - type: general
+                          number: '09876543210'
+                    country: UK
+                    date: '2021-05-28T09:52:13.0000000+00:00'
+                    deviceInfo:
+                      makeModel: Recipero Test
+                    identifierMatched: '100000010000023'
+                    identifiers:
+                      - '100000010000023'
+                      - '788946926374'
+                    system: Immobilise
+                    type: loss
+                  - organisation:
+                      contactEmail: something@something.com
+                      name: Recipero Local Ltd
+                    user:
+                      email: something@something.com
+                    country: UK
+                    date: '2021-12-06T02:19:05.0000000+00:00'
+                    identifierMatched: '100000010000025'
+                    reasonCode: none
+                    reasonText: none
+                    system: Recipero Intelligence
+                    type: search
+                  - organisation:
+                      contactEmail: something@something.com
+                      name: Recipero Local Ltd
+                    user:
+                      email: something@something.com
+                    country: UK
+                    date: '2021-12-06T02:19:05.0000000+00:00'
+                    identifierMatched: '100000010000023'
+                    reasonCode: none
+                    reasonText: none
+                    system: Recipero Intelligence
+                    type: search
+                  - organisation:
+                      address: '1, Somewhere Street, Somewhere City, AB1 2CD'
+                      contactEmail: something@something.com
+                    user:
+                      email: something@something.com
+                    certificateId: CM5-397f2
+                    country: UK
+                    date: '2021-12-07T04:49:24.0000000+00:00'
+                    identifierMatched: '100000010000023'
+                    identifiers:
+                      - '100000010000023'
+                    seller:
+                      address: '1, Somewhere Street, Somewhere City, AB1 2CD'
+                    system: Recipero
+                    type: check
+                  - organisation:
+                      name: Recipero Local
+                    country: UK
+                    date: '2021-12-17T01:41:16.0000000+00:00'
+                    identifierMatched: '100000010000023'
+                    reasonCode: training
+                    reasonText: training
+                    system: The NMPR (Police Interest)
+                    type: search
+  /search-summary:
+    post:
+      summary: Search Summary
+      description: Search Summary
+      operationId: 62792fff8b912a4fcf096a41
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NMPR_Search_Summary_Request'
+            example:
+              identifier: '100000010000023'
+              agentId: Insert Personal Access Token
+              reasonCode: intelligence
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NMPR_Search_Summary_Response'
+              example:
+                asset: true
+                blocked: true
+                crime: true
+                found: true
+                information: true
+                insurance: true
+                lost: true
+                searchHistory:
+                  - recipero-checkmend
+                  - recipero-intelligence
+                  - recipero-nmpr
+                validImei: true
+                makeModel: RECIPERO TESTMODEL
+components:
+  schemas:
+    NMPR_Search_Response:
+      type: object
+      properties:
+        summary:
+          type: object
+          properties:
+            asset:
+              type: boolean
+              description: A device with the searched identifier is protected by Recipero AssetWatch.
+            blocked:
+              type: boolean
+              description: A mobile network block exists for a device matching the searched identifier.
+            crime:
+              type: boolean
+              description: A crime report exists for a device matching the searched identifier.
+            found:
+              type: boolean
+              description: A found report exists for a device matching the searched identifier.
+            information:
+              type: boolean
+              description: An information report exists for a device matching the searched identifier.
+            insurance:
+              type: boolean
+              description: An insurance claim exists for a device matching the searched identifier.
+            lost:
+              type: boolean
+              description: A loss report exists for a device matching the searched identifier.
+            registered:
+              type: boolean
+              description: An ownership record exists for a device matching the searched identifier.
+            makeModel:
+              type: string
+              description: The Make/Model associated with the identifier from ModelCheck.
+            searchHistory:
+              type: array
+              items:
+                enum:
+                  - recipero-checkmend
+                  - recipero-claimscheck
+                  - recipero-intelligence
+                  - recipero-nmpr
+                type: string
+              description: 'If there are previous searches for this serial number on Recipero systems, that system will be returned in the array. An empty array indicates the identifier has not been searched on Recipero systems.'
+            validImei:
+              type: boolean
+              description: If an IMEI is submitted and the TAC is valid then this value will be true.
+          additionalProperties: false
+        correlationId:
+          type: string
+          description: A correlation ID for the search. This can be used when contacting support about a specific search.
+        events:
+          type: array
+          items:
+            required:
+              - type
+              - date
+              - identifierMatched
+            type: object
+            properties:
+              account:
+                type: object
+                properties:
+                  address:
+                    type: string
+                    description: The address associated with the account.
+                  email:
+                    type: string
+                    description: The email address associated with the account.
+                  name:
+                    type: string
+                    description: The name associated with the account.
+                  phone:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        number:
+                          type: string
+                          description: The phone number.
+                        type:
+                          enum:
+                            - general
+                            - landline
+                            - mobile
+                            - work
+                          type: string
+                          description: 'The type of phone number. E.g. work, mobile, landline or general.'
+                      additionalProperties: false
+                    description: The phone numbers associated with the account.
+                  postcode:
+                    type: string
+                    description: The postcode/zipcode associated with the account.
+                additionalProperties: false
+                description: An account is usually returned when an Immobilise account it matched during a phone number search.
+              organisation:
+                type: object
+                properties:
+                  address:
+                    type: string
+                    description: The address associated with the organisation.
+                  contactEmail:
+                    type: string
+                    description: The contact email address associated with the organisation.
+                  contactNumber:
+                    type: string
+                    description: The contact phone number associated with the organisation.
+                  id:
+                    type: string
+                    description: The ID of the organisation.
+                  idFormat:
+                    enum:
+                      - uuid
+                      - ori
+                    type: string
+                    description: The organisation ID format. The possible values are `uuid` and `ori`. `uuid` is a standard UUID format and represents a Recipero specific ID for the agency. `ori` is an identifier used by US law enforcement agencies.
+                  name:
+                    type: string
+                    description: The name of the organisation.
+                  postcode:
+                    type: string
+                    description: The postcode/zipcode associated with the organisation.
+                  subUnit:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: The ID of the sub unit.
+                      name:
+                        type: string
+                        description: The name of the sub unit.
+                    additionalProperties: false
+                    description: The sub unit that performed the search.
+                additionalProperties: false
+                description: An organisation is returned when previous search or check history matches the searched identifier.
+              user:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    description: The email address of the user.
+                  id:
+                    type: string
+                    description: The ID of the user.
+                  name:
+                    type: string
+                    description: The name of the user.
+                additionalProperties: false
+                description: A user is returned when previous search or check history matches the searched identifier.
+              certificateId:
+                type: string
+                description: 'If the record is a StatusCheck check, the associated certificate ID will be returned in this property.'
+              country:
+                type: string
+                description: If the history event can be associated with a given Country it will be indicated in this property.
+              date:
+                type: string
+                description: The the date of the history event. Recipero systems may have become aware of this record later than this date. The `dateAdded` property can provides the date the record was added to the system.
+              dateAdded:
+                type: string
+                description: The the date the record was added to Recipero systems.
+              deviceInfo:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    description: A description of the device.
+                  identifierType:
+                    type: string
+                    description: The type of identifier registered against the history item.
+                  makeModel:
+                    type: string
+                    description: The make/model of the device.
+                  vendorProductId:
+                    type: string
+                    description: If the history event is from a retailer and the product ID has been supplied it will be included in this property.
+                additionalProperties: false
+                description: If the history event provides additional information about the device it will be included in this property.
+              expires:
+                type: string
+                description: Some history events expire. After the record expires it will no longer impact checks on systems such as CheckMEND.
+              identifierMatched:
+                type: string
+                description: The full identifier from the history event that matched the searched identifier.
+              identifiers:
+                type: array
+                items:
+                  type: string
+                description: A list of identifiers associated with the history event.
+              ip:
+                type: string
+                description: If an IP address is associated with the history event it will be included in this property.
+              location:
+                type: string
+                description: If the history event include location information it will be included in this property. This is most likely to be returned for loss related events where it would indicate the loss location.
+              logistics:
+                type: object
+                properties:
+                  shipmentId:
+                    type: string
+                    description: The ID of the shipment.
+                description: If the history event is related to shipment and contains logistical information it will be included in this property.
+              possession:
+                enum:
+                  - Not Stated
+                  - No
+                  - Yes
+                type: string
+                description: 'For events with the `type` set to `check`, whether the checker was in possession of the device may be returned. This will be one of the following: `Not Stated`, `No` or `Yes`'
+              reasonCode:
+                enum:
+                  - intelligence
+                  - prisoner-property
+                  - property-office
+                  - found
+                  - search-warrant
+                  - stop-and-search
+                  - training
+                  - crime-report-precheck
+                  - custody-suite
+                  - forensic-examination
+                  - county-lines-related
+                  - further-investigation
+                  - missing-person
+                  - none
+                type: string
+                description: "Retuned for events with the `search` type. This is the reason for the search. The following values may be returned:\n\n|Search Reason Code|Description|\n|-|-|\n|county-lines-related|County Lines Related|\n|crime-report-precheck|Check Prior to Crime Reporting|\n|forensic-examination|Forensic Examination|\n|found|Found Property|\n|further-investigation|Further Investigation|\n|intelligence|Intelligence Gathering|\n|none|None|\n|prisoner-property|Prisoner Property|\n|property-office|Property Office|\n|search-warrant|Search Warrant|\n|stop-and-search|Stop and Search|\n|missing-person|Missing Persons|\n|training|Training, Demo or Analysis|\n"
+              reasonText:
+                type: string
+                description: Retuned for events with the `search` type. This is the reason for the search for non-LEA systems that do not use `reasonCode` such as Claimscheck.
+              reference:
+                type: string
+                description: A reference associated with the history event.
+              relatedItems:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    category:
+                      type: string
+                      description: A category for the item.
+                    dateFound:
+                      type: string
+                      description: If the item is part of a `loss` event but has since been found then this property will contain a date for when it was found.
+                    description:
+                      type: string
+                      description: A description of the item.
+                    identifiers:
+                      type: array
+                      items:
+                        type: string
+                      description: A list of identifiers associated with the item.
+                    makeModel:
+                      type: string
+                      description: The make and model of the item.
+                    reference:
+                      type: string
+                      description: A reference for the item.
+                    value:
+                      type: string
+                      description: If a value for the item is supplied it will be included in this property.
+                  additionalProperties: false
+                description: A list of associated items. These may be items on the same asset register or items related to the same crime report.
+              seller:
+                type: object
+                properties:
+                  address:
+                    type: string
+                    description: The address of the seller.
+                  identification:
+                    type: array
+                    items:
+                      type: string
+                      description: The identification type/number used by the seller.
+                    description: A list of identifications for the seller. This may include things like a driving license number or passport number.
+                  name:
+                    type: string
+                    description: The name of the seller.
+                additionalProperties: false
+                description: 'If the `type` of event is a transaction (such as a trade-in) and seller information is available, it will be included in this property.'
+              system:
+                type: string
+                description: 'The name of the system that provided the event. E.g. The NMPR, Claimscheck, Recipero AssetWatch.'
+              type:
+                type: string
+                description: "This is the type of history event. The possible values for this are not fixed, so your integration will need to be able to support any value.\n\nThe current list of types are as follows:\n\n|Type|Description|\n|-|-|\n|account|An online account (e.g. Immobilise) is associated with the number provided.|\n|activation|The device has been activated on a 3rd party network.|\n|asset|The device is protected by Recipero AssetWatch.|\n|block|A mobile network block exists for the device.|\n|unblock|A mobile network unblock exists for the device.|\n|check|A StatusCheck check was performed by a 3rd party via API or CheckMEND.|\n|claim|An insurance claim exists for the device.|\n|crime|A crime report exists for the device.|\n|found|A found report exists for the device.|\n|recovered|A report exists for the device indicating it has been recovered following loss/theft.|\n|inforeport|An information report exists for the device.|\n|notereport|An information note exists for the device.|\n|loss|A loss report exists for the device.|\n|search|A search was performed on the device.|\n|unregistered|The device is not registered to an owner.|\n|ownership|The device is registered to an owner.|\n|transaction|A transaction (e.g. trade-in) involving the device has taken place.|\n|mobile-network-status|Mobile network history for an MSISDN or IMEI.|\n"
+              msisdnInfo:
+                type: object
+                properties:
+                  msisdn:
+                    type: string
+                    description: The MSISDN associated with the history event.
+                  onNetwork:
+                    type: string
+                    description: The current network for the MSISDN at the time of the history event.
+                  originNetwork:
+                    type: string
+                    description: The original network for the MSISDN at the time of the history event.
+                  isPorted:
+                    type: boolean
+                    description: If `true` then the MSISDN has been ported to a different network.
+                  imei:
+                    type: string
+                    description: The IMEI associated with the MSISDN at the time of the history event if known.
+                  lastSimChange:
+                    type: string
+                    description: The date of the last SIM change for the MSISDN if known at the time of the history event.
+                  lastDeviceChange:
+                    type: string
+                    description: The date of the last device change for the MSISDN if known at the time of the history event.
+              origin:
+                enum:
+                  - direct
+                  - related
+                type: string
+                description: Indicates whether the event was created as a direct results of a searched idenfitier (`direct`) or if the event was created because it was associated with and returned in a search for another identifier (`related`). If the event is returned as a related event then the original identifier that created the event will be included in the `originIdentifier` property.
+              originIdentifier:
+                type: string
+                description: If the event is returned as a related event then the original identifier that created the event will be included in this property.
+              displayContext:
+                enum:
+                  - direct
+                  - related
+                type: string
+                description: This indicates the context for the the event being returned in this search. If `direct` then the event directly related the searched identifier. If `related` then the event is being returned because it is related to the searched identifier and provides additional information that may be useful.
+            additionalProperties: false
+            description: The history of events relating to the searched identifier. This will be sorted by date in descending order by default but this can by changed in the original request. Only properties that include information will be returned. If a property is not returned for a given history event it is because that piece of information is not known.
+      example:
+        summary:
+          asset: true
+          blocked: true
+          crime: true
+          found: true
+          information: true
+          insurance: true
+          lost: true
+          searchHistory:
+            - recipero-checkmend
+            - recipero-intelligence
+            - recipero-nmpr
+          validImei: true
+          makeModel: RECIPERO TESTMODEL
+        events:
+          - organisation:
+              name: Recipero Local Ltd
+            country: United States
+            date: '2017-02-15T09:41:32Z'
+            identifierMatched: '100000010000023'
+            system: Recipero
+            type: block
+          - organisation:
+              name: Recipero Local Ltd
+            country: Japan
+            date: '2017-02-15T09:59:31Z'
+            identifierMatched: '100000010000023'
+            system: Recipero
+            type: block
+          - organisation:
+              name: Recipero Local Ltd
+            country: United Kingdom
+            date: '2019-01-01T00:00:00Z'
+            identifierMatched: '100000010000023'
+            system: Recipero
+            type: unblock
+          - organisation:
+              name: Recipero Local/Recipero Local Borough
+            country: UK
+            date: '2019-04-20T00:00:00Z'
+            deviceInfo:
+              makeModel: ReciperoMake ReciperoModel
+            identifierMatched: '100000010000023'
+            reference: RCP-FND-12345
+            relatedItems:
+              - makeModel: ReciperoMake ReciperoModel
+                identifiers:
+                  - '100000010000023'
+            system: The NMPR
+            type: found
+          - organisation:
+              name: Recipero Local Ltd
+            country: United Kingdom
+            date: '2020-01-01T00:00:00Z'
+            identifierMatched: '100000010000023'
+            system: Recipero
+            type: block
+          - organisation:
+              name: Recipero Local Ltd
+            country: United Kingdom
+            date: '2020-02-11T14:36:14Z'
+            identifierMatched: '100000010000023'
+            system: Recipero AssetWatch
+            type: asset
+          - account:
+              address: 'Recipero Local, Corinium House, Corinium Avenue'
+              email: something@something.com
+              name: Recipero Local
+            country: UK
+            date: '2020-09-01T00:00:00Z'
+            deviceInfo:
+              makeModel: ReciperoMake ReciperoModel
+            identifierMatched: '100000010000023'
+            location: 'Corinium Ave, Gloucester GL4, UK, Gloucestershire, GB'
+            reference: LR20200901E70A-298C90B11078
+            relatedItems:
+              - makeModel: ReciperoMake ReciperoModel
+                description: This is a test item
+                identifiers:
+                  - '100000010000023'
+            system: ReportMyLoss
+            type: loss
+          - organisation:
+              name: Recipero Local Ltd
+            country: United Kingdom
+            date: '2020-09-01T00:00:00Z'
+            deviceInfo:
+              makeModel: Test Make Test Model
+            identifierMatched: '100000010000023'
+            reference: RCP-REF-20200901
+            system: ClaimsCheck
+            type: claim
+          - organisation:
+              contactEmail: something@something.com
+              name: Recipero Local
+            user:
+              email: something@something.com
+              name: NMPR Local
+            country: UK
+            date: '2020-09-18T10:00:00Z'
+            deviceInfo:
+              description: Test information report
+            identifierMatched: '100000010000023'
+            reference: 4a570ca86a900f7ed0a8894c23d3e412
+            relatedItems:
+              - identifiers:
+                  - '100000010000023'
+            system: The NMPR
+            type: inforeport
+          - organisation:
+              name: Recipero Local
+            country: UK
+            date: '2020-11-30T12:00:00Z'
+            identifierMatched: '100000010000023'
+            location: 'Recipero Ltd, Corinium Avenue, Gloucester, GL43HX'
+            reference: RCP-FND-20201130
+            relatedItems:
+              - identifiers:
+                  - '100000010000023'
+            system: Recipero
+            type: found
+          - account:
+              address: 'United Kingdom, GL4 3HX'
+              email: something@something.com
+              name: Register Account
+              phone:
+                - type: general
+                  number: '01234567890'
+                - type: general
+                  number: '02468135790'
+                - type: general
+                  number: '09876543210'
+            country: UK
+            date: '2021-05-28T09:52:02Z'
+            deviceInfo:
+              makeModel: Recipero Test
+            identifierMatched: '100000010000023'
+            identifiers:
+              - '100000010000023'
+              - '788946926374'
+            system: Immobilise
+            type: crime
+          - account:
+              address: 'United Kingdom, GL4 3HX'
+              email: something@something.com
+              name: Register Account
+              phone:
+                - type: general
+                  number: '01234567890'
+                - type: general
+                  number: '02468135790'
+                - type: general
+                  number: '09876543210'
+            country: UK
+            date: '2021-05-28T09:52:13Z'
+            deviceInfo:
+              makeModel: Recipero Test
+            identifierMatched: '100000010000023'
+            identifiers:
+              - '100000010000023'
+              - '788946926374'
+            system: Immobilise
+            type: loss
+          - organisation:
+              contactEmail: something@something.com
+              name: Recipero Local Ltd
+            user:
+              email: something@something.com
+            country: UK
+            date: '2021-12-06T14:19:05Z'
+            identifierMatched: '100000010000025'
+            reasonCode: none
+            reasonText: none
+            system: Recipero Intelligence
+            type: search
+          - organisation:
+              contactEmail: something@something.com
+              name: Recipero Local Ltd
+            user:
+              email: something@something.com
+            country: UK
+            date: '2021-12-06T14:19:05Z'
+            identifierMatched: '100000010000023'
+            reasonCode: none
+            reasonText: none
+            system: Recipero Intelligence
+            type: search
+          - organisation:
+              address: '1, Somewhere Street, Somewhere City, AB1 2CD'
+              contactEmail: something@something.com
+            user:
+              email: something@something.com
+            certificateId: CM5-397f2
+            country: UK
+            date: '2021-12-07T16:49:24Z'
+            identifierMatched: '100000010000023'
+            identifiers:
+              - '100000010000023'
+            seller:
+              address: '1, Somewhere Street, Somewhere City, AB1 2CD'
+            system: Recipero
+            type: check
+          - organisation:
+              name: Recipero Local
+            country: UK
+            date: '2021-12-17T13:41:16Z'
+            identifierMatched: '100000010000023'
+            reasonCode: training
+            reasonText: training
+            system: The NMPR (Police Interest)
+            type: search
+      x-apim-schema-name: NMPR Search Response
+    NMPR_Search_Request:
+      required:
+        - agentId
+        - identifier
+        - reasonCode
+      type: object
+      properties:
+        agencyId:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: 'If perfoming the search on behalf on another agency, the ID of that agency can be supplied here. This property is not required if you are supplying an `agentId` that matches a registered account on The NMPR.'
+        agentId:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: The ID or Email Address of the user/agent performing the search. If you are a single agency (e.g. a UK police force) performing checks on behalf of your agents then this field will be required and those officers must be registered on The NMPR with your agency.
+        identifier:
+          maxLength: 100
+          minLength: 5
+          type: string
+          description: The identifier to search. E.g. serial number or IMEI.
+        reasonCode:
+          enum:
+            - intelligence
+            - prisoner-property
+            - property-office
+            - found
+            - search-warrant
+            - stop-and-search
+            - training
+            - crime-report-precheck
+            - custody-suite
+            - forensic-examination
+            - county-lines-related
+            - further-investigation
+            - missing-person
+          type: string
+          description: "The reason for the search. The following values are accepted:\n\n|Search Reason Code|Description|\n|-|-|\n|county-lines-related|County Lines Related|\n|crime-report-precheck|Check Prior to Crime Reporting|\n|forensic-examination|Forensic Examination|\n|found|Found Property|\n|further-investigation|Further Investigation|\n|intelligence|Intelligence Gathering|\n|none|None|\n|prisoner-property|Prisoner Property|\n|property-office|Property Office|\n|search-warrant|Search Warrant|\n|stop-and-search|Stop and Search|\n|missing-person|Missing Persons|\n|training|Training, Demo or Analysis|\n"
+        onBehalfOfAgentId:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: 'If your agent is perfoming the search on behalf on another agent, the ID of that agent can be supplied in this property.'
+        reference:
+          type: string
+          description: A reference for the search. This would be either supplied by an agent or an internal ID for traceability purposes.
+        sort:
+          enum:
+            - date-desc
+            - date-asc
+            - priority-desc
+          type: string
+          description: "The events list will contain a history of events that match the supplied identifier. This property affects the order of the events.\n\n|Sort Option|Description|\n|-|-|\n|date-asc|Sorted in ascending order by date.|\n|date-desc|Sorted in descending order by date. **Default**|\n|priority-desc|Sorted by priority and then by date in descending order.|\n\n*Priorty event grouping for priority-desc (network blocks > crime/loss > Recipero AssetWatch > others).*"
+          default: date-desc
+        subAgencyId:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: 'If perfoming the search on behalf on another sub-agency, the ID of that sub-agency can be supplied in this property. E.g. a police force borough.'
+        updateMobileNetworkStatus:
+          type: boolean
+          description: 'If you are searching an MSISDN, setting this to true will attempt to update current/origin network information, sim/device swap and IMEI for that number. This feature requires the originating agency/user to have Number Intel permissions.'
+          default: false
+        includeRelatedEvents:
+          type: boolean
+          description: 'By default, the NMPR Search endpoint will return a list of events that directly match the searched identifier. Setting this to true will also return events that are related to the searched identifier. For example, if searching for an MSISDN and we have record of one or more IMEI relating to that MSISDN, the events relating to those IMEIs will also be returned. This can provide a more complete picture of the history of an identifier but may also return a larger number of events.'
+          default: false
+        metaData:
+          type: object
+          properties:
+            covert:
+              type: boolean
+              description: "Some agents may have permission to perform searches that are either temporarily or permenantly hidden from other users due to investigation sensitivity (e.g. an internal investigation).\n\nThis property can only be used if supplying an `agentId` registered on The NMPR. **If the user or API client does not have this permission an error will be returned.**"
+              default: false
+            ip:
+              type: string
+              description: The IP address of the agent or agency performing the search.
+      description: "The request schema for performing a search on Recipero's NMPR.\n\nThe `identifier` and `reasonCode` properties are always required. The `agencyId` and `agentId` properties are required by default but your account configuration may make these optional depending on use case."
+      example:
+        identifier: '100000010000023'
+        agentId: Insert Personal Access Token
+        reasonCode: intelligence
+      x-apim-schema-name: NMPR Search Request
+    NMPR_Search_Summary_Request:
+      required:
+        - agentId
+        - identifier
+        - reasonCode
+      type: object
+      properties:
+        agencyId:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: 'If performing the search on behalf on another agency, the ID of that agency can be supplied here. This property is not required if you are supplying an `agentId` that matches a registered account on The NMPR.'
+        agentId:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: The ID or Email Address of the user/agent performing the search. If you are a single agency (e.g. a UK police force) performing checks on behalf of your agents then this field will be required and those officers must be registered on The NMPR with your agency.
+        identifier:
+          maxLength: 100
+          minLength: 5
+          type: string
+          description: The identifier to search. E.g. serial number or IMEI.
+        reasonCode:
+          enum:
+            - intelligence
+            - prisoner-property
+            - property-office
+            - found
+            - search-warrant
+            - stop-and-search
+            - training
+            - crime-report-precheck
+            - custody-suite
+            - forensic-examination
+            - county-lines-related
+            - further-investigation
+            - missing-person
+          type: string
+          description: "The reason for the search. The following values are accepted:\n\n|Search Reason Code|Description|\n|-|-|\n|county-lines-related|County Lines Related|\n|crime-report-precheck|Check Prior to Crime Reporting|\n|forensic-examination|Forensic Examination|\n|found|Found Property|\n|further-investigation|Further Investigation|\n|intelligence|Intelligence Gathering|\n|none|None|\n|prisoner-property|Prisoner Property|\n|property-office|Property Office|\n|search-warrant|Search Warrant|\n|stop-and-search|Stop and Search|\n|missing-person|Missing Persons|\n|training|Training, Demo or Analysis|\n"
+        onBehalfOfAgentId:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: 'If your agent is performing the search on behalf on another agent, the ID of that agent can be supplied in this property.'
+        reference:
+          type: string
+          description: A reference for the search. This would be either supplied by an agent or an internal ID for traceability purposes.
+        subAgencyId:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: 'If performing the search on behalf on another sub-agency, the ID of that sub-agency can be supplied in this property. E.g. a police force borough.'
+        metaData:
+          type: object
+          properties:
+            covert:
+              type: boolean
+              description: "Some agents may have permission to perform searches that are either temporarily or permenantly hidden from other users due to investigation sensitivity (e.g. an internal investigation).\n\nThis property can only be used if supplying an `agentId` registered on The NMPR. **If the user or API client does not have this permission an error will be returned.**"
+              default: false
+            ip:
+              type: string
+              description: The IP address of the agent or agency performing the search.
+      description: "The request schema for performing a search on Recipero's NMPR.\n\nThe `identifier` and `reasonCode` properties are always required. The `agencyId` and `agentId` properties are required by default but your account configuration may make these optional depending on use case."
+      x-apim-schema-name: NMPR Search Summary Request
+    NMPR_Search_Summary_Response:
+      type: object
+      properties:
+        asset:
+          type: boolean
+          description: A device with the searched identifier is protected by Recipero AssetWatch.
+        blocked:
+          type: boolean
+          description: A mobile network block exists for a device matching the searched identifier.
+        crime:
+          type: boolean
+          description: A crime report exists for a device matching the searched identifier.
+        found:
+          type: boolean
+          description: A found report exists for a device matching the searched identifier.
+        information:
+          type: boolean
+          description: An information report exists for a device matching the searched identifier.
+        insurance:
+          type: boolean
+          description: An insurance claim exists for a device matching the searched identifier.
+        lost:
+          type: boolean
+          description: A loss report exists for a device matching the searched identifier.
+        registered:
+          type: boolean
+          description: An ownership record exists for a device matching the searched identifier.
+        makeModel:
+          type: string
+          description: The Make/Model associated with the identifier from ModelCheck.
+        searchHistory:
+          type: array
+          items:
+            enum:
+              - recipero-checkmend
+              - recipero-claimscheck
+              - recipero-intelligence
+              - recipero-nmpr
+            type: string
+          description: 'If there are previous searches for this serial number on Recipero systems, that system will be returned in the array. An empty array indicates the identifier has not been searched on Recipero systems.'
+        validImei:
+          type: boolean
+          description: If an IMEI is submitted and the TAC is valid then this value will be true.
+      additionalProperties: false
+      example:
+        asset: true
+        blocked: true
+        crime: true
+        found: true
+        information: true
+        insurance: true
+        lost: true
+        searchHistory:
+          - recipero-checkmend
+          - recipero-intelligence
+          - recipero-nmpr
+        validImei: true
+        makeModel: RECIPERO TESTMODEL
+      x-apim-schema-name: NMPR Search Summary Response

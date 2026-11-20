@@ -11,12 +11,13 @@ struct SIMPickerView: View {
             Text("Which special SIM card are you using?")
                 .font(.headline)
                 .padding(.top)
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))], spacing: 16) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 2),
+                      spacing: 16) {
                 ForEach(SpecialSIM.all) { sim in
                     Button { onSelect(sim) } label: {
                         Text("\(sim.id)")
-                            .font(.system(size: 44, weight: .bold, design: .rounded))
-                            .frame(maxWidth: .infinity, minHeight: 100)
+                            .font(.system(size: 64, weight: .bold, design: .rounded))
+                            .frame(maxWidth: .infinity, minHeight: 150)
                     }
                     .buttonStyle(.borderedProminent)
                     .accessibilityLabel(sim.title)

@@ -55,7 +55,7 @@ struct ContentView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             // The supplied colour logo on the light navigation bar.
-            .toolbar { ToolbarItem(placement: .principal) { ReciperoLogo(style: .colour, height: 24) } }
+            .toolbar { ToolbarItem(placement: .principal) { ReciperoLogo(style: .colour, height: 30) } }
         }
         .tint(Theme.red)
     }

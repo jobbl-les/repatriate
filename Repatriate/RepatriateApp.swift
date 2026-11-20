@@ -11,6 +11,9 @@ struct RepatriateApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                // The brand guide defines light grounds only (no dark theme), so
+                // always render in light mode, whatever the phone is set to.
+                .preferredColorScheme(.light)
         }
     }
 }

@@ -13,9 +13,25 @@ struct SlotReel: View {
     let font: Font
     /// Height of one row (and of the visible window).
     let rowHeight: CGFloat
+    /// When true (Reduce Motion), words cross-dissolve instead of scrolling.
+    var dissolve = false
 
-    /// Clipped window onto the stacked words.
+    /// Clipped window onto the stacked words (or a cross-dissolve).
     var body: some View {
+        if dissolve {
+            ZStack(alignment: .leading) {
+                // Invisible longest word keeps the width stable.
+                Text(words.max(by: { $0.count < $1.count }) ?? "").font(font).hidden()
+                Text(words[step]).font(font).id(step).transition(.opacity)
+            }
+            .frame(height: rowHeight)
+        } else {
+            scrolling
+        }
+    }
+
+    /// The scrolling reel: stacked words offset so one row shows.
+    private var scrolling: some View {
         ZStack(alignment: .topLeading) {
             // Invisible copy of the longest word fixes the window width.
             Text(words.max(by: { $0.count < $1.count }) ?? "")
@@ -66,7 +82,7 @@ struct IntroView: View {
             // Set type: fixed "RE" followed by the spinning reel.
             HStack(spacing: 0) {
                 Text("RE").font(font)
-                SlotReel(words: suffixes, step: step, font: font, rowHeight: 54)
+                SlotReel(words: suffixes, step: step, font: font, rowHeight: 54, dissolve: reduceMotion)
             }
             .foregroundStyle(.white)
             .opacity(showLogo ? 0 : 1)
@@ -82,28 +98,22 @@ struct IntroView: View {
 
     /// Runs the timeline: logo hold, dissolve, spin, land, hold.
     private func play() async {
-        // Reduced motion: show the app name briefly with no spinning.
-        if reduceMotion {
-            step = suffixes.count - 1
-            showLogo = false
-            try? await Task.sleep(for: .seconds(1.2))
-            onFinished()
-            return
-        }
-
         // 1. Hold on the official logo.
         try? await Task.sleep(for: .seconds(0.7))
         // 2. Dissolve to the set type reading RECIPERO.
         withAnimation(.easeOut(duration: 0.25)) { showLogo = false }
         try? await Task.sleep(for: .seconds(0.6))
         // 3. Spin through the intermediate RE- words (smooth ease-out, no bounce).
-        let move = Animation.timingCurve(0.2, 0, 0, 1, duration: 0.24)
+        // Reduce Motion swaps the scroll for a gentle cross-dissolve, same timing.
+        let move: Animation = reduceMotion ? .easeInOut(duration: 0.24)
+                                           : .timingCurve(0.2, 0, 0, 1, duration: 0.24)
         for index in 1..<(suffixes.count - 1) {
             withAnimation(move) { step = index }
             try? await Task.sleep(for: .seconds(0.32))
         }
         // 4. Land on the app name with a slower final settle.
-        withAnimation(.timingCurve(0.2, 0, 0, 1, duration: 0.6)) { step = suffixes.count - 1 }
+        withAnimation(reduceMotion ? .easeInOut(duration: 0.4)
+                                    : .timingCurve(0.2, 0, 0, 1, duration: 0.6)) { step = suffixes.count - 1 }
         try? await Task.sleep(for: .seconds(1.3))
         onFinished()
     }

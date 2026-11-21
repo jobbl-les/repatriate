@@ -1,11 +1,11 @@
 import SwiftUI
 
-/// A nano-SIM outline: 12.3 x 8.8 mm with one clipped (chamfered) corner.
+/// A landscape nano-SIM outline: 12.3 x 8.8 mm, one clipped (chamfered) corner.
 ///
 /// Dimensions follow the 4FF nano-SIM standard and scale with the rect given,
 /// so the shape keeps true proportions whenever it is drawn at an aspect
-/// ratio of `NanoSIMShape.aspectRatio`. The clipped corner is top-right, the
-/// usual orientation when the contacts face up.
+/// ratio of `NanoSIMShape.aspectRatio`. Landscape, with the clipped corner at
+/// the bottom left to match the printed SIM labels.
 struct NanoSIMShape: Shape {
     /// Width divided by height of a real nano-SIM (12.3 / 8.8).
     static let aspectRatio: CGFloat = 12.3 / 8.8
@@ -17,7 +17,7 @@ struct NanoSIMShape: Shape {
     /// Corner rounding in millimetres.
     private static let radiusMM: CGFloat = 0.8
 
-    /// Builds the outline: a rectangle with the top-right corner cut off and
+    /// Builds the outline: a rectangle with the bottom-left corner cut off and
     /// every corner slightly rounded.
     /// - Parameter rect: The rectangle to draw into.
     /// - Returns: The nano-SIM outline path.
@@ -27,13 +27,13 @@ struct NanoSIMShape: Shape {
         let cut = Self.chamferMM * scale
         let radius = Self.radiusMM * scale
 
-        // Corners, clockwise from top-left; the top-right corner is clipped.
+        // Corners, clockwise from top-left; the bottom-left corner is clipped.
         let corners = [
             CGPoint(x: rect.minX, y: rect.minY),
-            CGPoint(x: rect.maxX - cut, y: rect.minY),
-            CGPoint(x: rect.maxX, y: rect.minY + cut),
+            CGPoint(x: rect.maxX, y: rect.minY),
             CGPoint(x: rect.maxX, y: rect.maxY),
-            CGPoint(x: rect.minX, y: rect.maxY)
+            CGPoint(x: rect.minX + cut, y: rect.maxY),
+            CGPoint(x: rect.minX, y: rect.maxY - cut)
         ]
 
         // Rounded polygon: start mid-way along the first edge, then round

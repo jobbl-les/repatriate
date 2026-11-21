@@ -4,9 +4,11 @@ Development utility (not part of the app, not compiled into it).
 
 `sim-labels.pdf` is a full A4 page of nano-SIM labels. **Print at 100% /
 "Actual size" (turn off "Fit to page")** and each label matches a physical
-nano-SIM: 12.3 x 8.8 mm, diagonal cut-off at lower right, 4 mm gaps for
+nano-SIM: 12.3 x 8.8 mm, diagonal cut-off at lower left, 4 mm gaps for
 cutting by hand. The sheet carries 12 x 22 = 264 labels numbered 100 to 363,
-white digits in Arial Rounded MT Bold on the app's brand red (#db052c).
+a tiny pure-white Recipero logo (the supplied PNG from the app's asset catalog) along
+the top edge, and white digits in Arial Rounded MT Bold below it, on the app's brand red
+(#db052c).
 
 ## Regenerating
 

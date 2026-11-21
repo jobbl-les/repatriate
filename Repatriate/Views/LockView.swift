@@ -1,44 +1,38 @@
 import SwiftUI
 
-/// Branded sign-in screen shown until Face ID succeeds.
+/// Sign-in screen shown while waiting for (or after a failed) Face ID check.
+///
+/// The Recipero logo is supplied by the surrounding `BrandBar`, so this view
+/// only carries the Face ID prompt, any error message and a retry button.
 struct LockView: View {
     /// Gate state to display (idle, in progress, or an error message).
     let state: AuthViewModel.State
     /// Start (or retry) Face ID authentication.
     let onAuthenticate: () -> Void
 
-    /// Red ground, white logo, app name, status text and a sign-in button.
+    /// Face ID glyph, status text and a sign-in button on a white ground.
     var body: some View {
-        ZStack {
-            Theme.red.ignoresSafeArea()
-            VStack(spacing: 28) {
-                Spacer()
-                ReciperoLogo(style: .white, height: 36)
-                Text("Repatriate")
-                    .font(.system(size: 28, weight: .semibold))
-                    .foregroundStyle(.white)
-                Image(systemName: "faceid")
-                    .font(.system(size: 64))
-                    .foregroundStyle(.white)
-                // Show a failure reason when authentication did not succeed.
-                if case .failed(let message) = state {
-                    Text(message)
-                        .font(.footnote.weight(.medium))
-                        .foregroundStyle(.white)
-                        .multilineTextAlignment(.center)
-                }
-                Button(action: onAuthenticate) {
-                    Label("Sign in with Face ID", systemImage: "faceid")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.white)
-                .foregroundStyle(Theme.red) // red label on the white button (5.2:1)
-                .controlSize(.large)
-                .disabled(state == .authenticating)
-                Spacer()
+        VStack(spacing: 28) {
+            Spacer()
+            Image(systemName: "faceid")
+                .font(.system(size: 64))
+                .foregroundStyle(Theme.red)
+            // Show a failure reason when authentication did not succeed.
+            if case .failed(let message) = state {
+                Text(message)
+                    .font(.footnote.weight(.medium))
+                    .multilineTextAlignment(.center)
             }
-            .padding(32)
+            Button(action: onAuthenticate) {
+                Label("Sign in with Face ID", systemImage: "faceid")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(Theme.red)
+            .controlSize(.large)
+            .disabled(state == .authenticating)
+            Spacer()
         }
+        .padding(32)
     }
 }

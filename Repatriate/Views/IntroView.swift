@@ -51,70 +51,123 @@ struct SlotReel: View {
     }
 }
 
-/// Opening animation shown before authentication.
+/// Opening animation shown before authentication (about 9 seconds).
 ///
-/// Starts on the supplied Recipero logo, dissolves to "RECIPERO" set in
-/// type, spins the "CIPERO" reel through a series of RE- words like a slot
-/// machine, and lands on the app name, REPATRIATE. Runs a few seconds.
+/// 1. 0 to 7s: "RECYCLE" fades in, the reel cycles through REUSE, RECOVER,
+///    RETURN and REFURB, then the whole word is erased right to left.
+/// 2. 7 to 8.5s: the supplied Recipero logo replaces it and settles.
+/// 3. Then the logo glides to the top of the screen as the ground fades
+///    from brand red to white, landing exactly where `BrandBar` sits.
 struct IntroView: View {
     /// Called once the animation has finished.
     let onFinished: () -> Void
 
-    /// Suffixes that follow the fixed "RE"; the first reads "RECIPERO",
-    /// the last is the app name.
-    private let suffixes = ["CIPERO", "COVERY", "UNITE", "COVER", "TURN", "CYCLE", "PATRIATE"]
+    /// Suffixes that follow the fixed "RE": RECYCLE, REUSE, RECOVER, RETURN, REFURB.
+    private let suffixes = ["CYCLE", "USE", "COVER", "TURN", "FURB"]
+    /// Widest word; fixes the stage width so erasing stays left-anchored.
+    private let widestWord = "RECYCLE"
 
     /// Reel position (index into `suffixes`).
     @State private var step = 0
-    /// Whether the supplied logo (rather than the set type) is showing.
-    @State private var showLogo = true
+    /// Opacity of the word stage.
+    @State private var wordOpacity = 0.0
+    /// True while the word is being erased (reel swapped for plain text).
+    @State private var erasing = false
+    /// How many letters have been erased from the right.
+    @State private var erased = 0
+    /// 0 = logo hidden, 1 = shown.
+    @State private var logoShown = 0.0
+    /// 0 = white logo (on red), 1 = colour logo (on white).
+    @State private var colourMix = 0.0
+    /// Rendered height of the logo (shrinks as it moves up).
+    @State private var logoHeight: CGFloat = 56
+    /// Whether the logo has moved to the top bar position.
+    @State private var atTop = false
+    /// Opacity of the red ground over the white one.
+    @State private var redOpacity = 1.0
     /// Honour the system "Reduce Motion" setting.
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    /// Type style for the wordmark-like text.
+    /// Type style for the words.
     private let font = Font.system(size: 44, weight: .semibold)
 
-    /// Brand red ground with the logo / reel centred.
+    /// Red-over-white ground, the word stage and the logo.
     var body: some View {
-        ZStack {
-            Theme.red.ignoresSafeArea()
+        GeometryReader { proxy in
+            ZStack {
+                Color.white
+                Theme.red.opacity(redOpacity)
 
-            // Set type: fixed "RE" followed by the spinning reel.
-            HStack(spacing: 0) {
-                Text("RE").font(font)
-                SlotReel(words: suffixes, step: step, font: font, rowHeight: 54, dissolve: reduceMotion)
+                // The word stage: fixed "RE" plus the reel, or erasing text.
+                ZStack(alignment: .leading) {
+                    Text(widestWord).font(font).hidden()
+                    if erasing {
+                        Text(String(("RE" + suffixes[suffixes.count - 1]).dropLast(erased)))
+                            .font(font)
+                    } else {
+                        HStack(spacing: 0) {
+                            Text("RE").font(font)
+                            SlotReel(words: suffixes, step: step, font: font,
+                                     rowHeight: 54, dissolve: reduceMotion)
+                        }
+                    }
+                }
+                .foregroundStyle(.white)
+                .opacity(wordOpacity)
+                .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
+
+                // The supplied logo, white on red then colour on white.
+                ZStack {
+                    ReciperoLogo(style: .white, height: logoHeight)
+                        .opacity(logoShown * (1 - colourMix))
+                    ReciperoLogo(style: .colour, height: logoHeight)
+                        .opacity(logoShown * colourMix)
+                }
+                .position(x: proxy.size.width / 2,
+                          y: atTop ? proxy.safeAreaInsets.top + BrandBar.height / 2
+                                   : proxy.size.height / 2)
             }
-            .foregroundStyle(.white)
-            .opacity(showLogo ? 0 : 1)
-
-            // The supplied logo file opens the sequence.
-            ReciperoLogo(style: .white, height: 44)
-                .opacity(showLogo ? 1 : 0)
         }
+        .ignoresSafeArea()
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Recipero Repatriate")
+        .accessibilityLabel("Recipero")
         .task { await play() }
     }
 
-    /// Runs the timeline: logo hold, dissolve, spin, land, hold.
+    /// Runs the whole timeline.
     private func play() async {
-        // 1. Hold on the official logo.
-        try? await Task.sleep(for: .seconds(0.7))
-        // 2. Dissolve to the set type reading RECIPERO.
-        withAnimation(.easeOut(duration: 0.25)) { showLogo = false }
-        try? await Task.sleep(for: .seconds(0.6))
-        // 3. Spin through the intermediate RE- words (smooth ease-out, no bounce).
-        // Reduce Motion swaps the scroll for a gentle cross-dissolve, same timing.
-        let move: Animation = reduceMotion ? .easeInOut(duration: 0.24)
-                                           : .timingCurve(0.2, 0, 0, 1, duration: 0.24)
-        for index in 1..<(suffixes.count - 1) {
+        // Reduce Motion swaps scrolling for dissolves, with the same timing.
+        let move: Animation = reduceMotion ? .easeInOut(duration: 0.3)
+                                           : .timingCurve(0.2, 0, 0, 1, duration: 0.35)
+
+        // Word phase (0 to 7s): fade in RECYCLE, cycle the reel, erase.
+        withAnimation(.easeOut(duration: 0.4)) { wordOpacity = 1 }
+        try? await Task.sleep(for: .seconds(1.25))
+        for index in 1..<suffixes.count {
             withAnimation(move) { step = index }
-            try? await Task.sleep(for: .seconds(0.32))
+            // The last word (REFURB) gets a slightly shorter dwell so the erase ends at 7s.
+            try? await Task.sleep(for: .seconds(index == suffixes.count - 1 ? 1.2 : 1.25))
         }
-        // 4. Land on the app name with a slower final settle.
-        withAnimation(reduceMotion ? .easeInOut(duration: 0.4)
-                                    : .timingCurve(0.2, 0, 0, 1, duration: 0.6)) { step = suffixes.count - 1 }
-        try? await Task.sleep(for: .seconds(1.3))
+        erasing = true
+        let letters = ("RE" + suffixes[suffixes.count - 1]).count
+        for count in 1...letters {
+            erased = count
+            try? await Task.sleep(for: .seconds(0.13))
+        }
+        wordOpacity = 0
+
+        // Logo phase (7 to 8.5s): the supplied logo replaces the word and settles.
+        withAnimation(.easeOut(duration: 0.4)) { logoShown = 1 }
+        try? await Task.sleep(for: .seconds(1.5))
+
+        // Glide to the top bar while the ground fades from red to white.
+        withAnimation(.timingCurve(0.2, 0, 0, 1, duration: 0.9)) {
+            atTop = true
+            logoHeight = BrandBar.logoHeight
+            redOpacity = 0
+            colourMix = 1
+        }
+        try? await Task.sleep(for: .seconds(1.0))
         onFinished()
     }
 }

@@ -11,7 +11,7 @@ struct ContentView: View {
     /// Used to re-lock the app when it goes to the background.
     @Environment(\.scenePhase) private var scenePhase
 
-    /// Intro first, then either the lock screen or the lookup flow.
+    /// Intro first, then the brand bar above either the lock screen or the lookup flow.
     var body: some View {
         Group {
             if !introFinished {
@@ -20,10 +20,17 @@ struct ContentView: View {
                     // Prompt for Face ID as soon as the intro ends.
                     Task { await auth.authenticate() }
                 }
-            } else if auth.state == .unlocked {
-                lookupFlow
             } else {
-                LockView(state: auth.state) { Task { await auth.authenticate() } }
+                VStack(spacing: 0) {
+                    BrandBar()
+                    if auth.state == .unlocked {
+                        lookupFlow
+                    } else {
+                        LockView(state: auth.state) { Task { await auth.authenticate() } }
+                    }
+                }
+                .background(Color.white)
+                .tint(Theme.red)
             }
         }
         // Re-lock on background; prompt again when returning to the app.
@@ -38,26 +45,20 @@ struct ContentView: View {
 
     /// The SIM lookup flow, shown once authenticated.
     private var lookupFlow: some View {
-        NavigationStack {
-            Group {
-                switch model.phase {
-                case .selecting:
-                    SIMPickerView(onSelect: model.select)
-                case .waitingForNetwork(let sim):
-                    InstructionsView(sim: sim,
-                                     onConfirm: { Task { await model.networkSymbolAppeared(for: sim) } },
-                                     onCancel: model.reset)
-                case .searching(let sim):
-                    ProgressView("Looking up \(sim.title)…")
-                case .result(let sim, let text):
-                    ResultView(sim: sim, text: text, onDone: model.reset)
-                }
+        Group {
+            switch model.phase {
+            case .selecting:
+                SIMPickerView(onSelect: model.select)
+            case .waitingForNetwork(let sim):
+                InstructionsView(sim: sim,
+                                 onConfirm: { Task { await model.networkSymbolAppeared(for: sim) } },
+                                 onCancel: model.reset)
+            case .searching(let sim):
+                ProgressView("Looking up \(sim.title)…")
+            case .result(let sim, let text):
+                ResultView(sim: sim, text: text, onDone: model.reset)
             }
-            .navigationBarTitleDisplayMode(.inline)
-            // The supplied colour logo on the light navigation bar.
-            .toolbar { ToolbarItem(placement: .principal) { ReciperoLogo(style: .colour, height: 30) } }
         }
-        .tint(Theme.red)
     }
 }
 

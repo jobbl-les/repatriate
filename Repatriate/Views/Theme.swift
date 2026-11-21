@@ -44,3 +44,21 @@ struct ReciperoLogo: View {
             .accessibilityLabel("Recipero")
     }
 }
+
+/// The brand bar pinned to the top of every post-intro screen.
+///
+/// The intro animation finishes with the logo in exactly this position and
+/// size, so the hand-off from the intro to the app is seamless.
+struct BrandBar: View {
+    /// Height of the bar (matches a standard inline navigation bar).
+    static let height: CGFloat = 44
+    /// Height of the logo inside the bar.
+    static let logoHeight: CGFloat = 30
+
+    /// The colour logo centred in the bar on a white ground.
+    var body: some View {
+        ReciperoLogo(style: .colour, height: Self.logoHeight)
+            .frame(maxWidth: .infinity)
+            .frame(height: Self.height)
+    }
+}
